@@ -139,6 +139,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["c", "ec", "pgc"]
     },
+    "BluespecSV": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["bsv"]
+    },
     "Cabal": {
       "nested": true,
       "line_comment": ["--"],

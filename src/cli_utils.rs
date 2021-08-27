@@ -6,6 +6,7 @@ use std::{
 };
 
 use clap::crate_version;
+use colored::*;
 use num_format::ToFormattedString;
 
 use crate::input::Format;
@@ -152,12 +153,12 @@ impl<W: Write> Printer<W> {
         writeln!(
             self.writer,
             " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
-            "Language",
-            "Files",
-            "Lines",
-            "Code",
-            "Comments",
-            "Blanks",
+            "Language".bold().blue(),
+            "Files".bold().blue(),
+            "Lines".bold().blue(),
+            "Code".bold().blue(),
+            "Comments".bold().blue(),
+            "Blanks".bold().blue(),
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
         self.print_row()
@@ -191,6 +192,41 @@ impl<W: Write> Printer<W> {
         )
     }
 
+    fn print_language_in_print_total(&mut self, language: &Language) -> io::Result<()>
+    where
+        W: Write,
+    {
+        self.print_language_name(language.inaccurate, "Total", None)?;
+        write!(self.writer, " ")?;
+        writeln!(
+            self.writer,
+            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            language
+                .children
+                .values()
+                .map(Vec::len)
+                .sum::<usize>()
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .lines()
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .code
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .comments
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .blanks
+                .to_formatted_string(&self.number_format)
+                .blue(),
+        )
+    }
+
     pub fn print_language_name(
         &mut self,
         inaccurate: bool,
@@ -211,7 +247,12 @@ impl<W: Write> Printer<W> {
             write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
             write!(self.writer, "|")?;
         } else {
-            write!(self.writer, " {:<len$}", name, len = lang_section_len)?;
+            write!(
+                self.writer,
+                " {:<len$}",
+                name.bold(),
+                len = lang_section_len
+            )?;
         }
         if inaccurate {
             write!(self.writer, "{}", IDENT_INACCURATE)?;
@@ -220,7 +261,7 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    fn print_code_stats<'a, 'b>(
+    fn print_code_stats(
         &mut self,
         language_type: LanguageType,
         stats: &[CodeStats],
@@ -261,7 +302,7 @@ impl<W: Write> Printer<W> {
                     .collect::<Vec<_>>(),
             )?;
         }
-        let mut subtotal = tokei::Report::new(format!("(Total)").into());
+        let mut subtotal = tokei::Report::new("(Total)".into());
         let summary = parent.summarise();
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
@@ -271,18 +312,18 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    pub fn print_results<'a, I>(&mut self, languages: I) -> io::Result<()>
+    pub fn print_results<'a, I>(&mut self, languages: I, compact: bool) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
         let (a, b): (Vec<_>, Vec<_>) = languages
             .filter(|(_, v)| !v.is_empty())
-            .partition(|(_, l)| l.children.is_empty());
+            .partition(|(_, l)| compact || l.children.is_empty());
         let mut first = true;
 
         for languages in &[&a, &b] {
             for &(name, language) in *languages {
-                let has_children = !language.children.is_empty();
+                let has_children = !(compact || language.children.is_empty());
                 if first {
                     first = false;
                 } else if has_children || self.list_files {
@@ -296,41 +337,49 @@ impl<W: Write> Printer<W> {
 
                 if self.list_files {
                     self.print_subrow()?;
-                    let (a, b): (Vec<_>, Vec<_>) = language
-                        .reports
-                        .iter()
-                        .partition(|r| r.stats.blobs.is_empty());
-                    for reports in &[&a, &b] {
-                        let mut first = true;
-                        for report in reports.iter() {
-                            if !report.stats.blobs.is_empty() {
-                                if first && a.is_empty() {
-                                    writeln!(self.writer, " {}", report.name.display())?;
-                                    first = false;
-                                } else {
+
+                    if !compact {
+                        let (a, b): (Vec<_>, Vec<_>) = language
+                            .reports
+                            .iter()
+                            .partition(|r| r.stats.blobs.is_empty());
+                        for reports in &[&a, &b] {
+                            let mut first = true;
+                            for report in reports.iter() {
+                                if !report.stats.blobs.is_empty() {
+                                    if first && a.is_empty() {
+                                        writeln!(self.writer, " {}", report.name.display())?;
+                                        first = false;
+                                    } else {
+                                        writeln!(
+                                            self.writer,
+                                            "-- {} {}",
+                                            report.name.display(),
+                                            "-".repeat(
+                                                self.columns
+                                                    - 4
+                                                    - report.name.display().to_string().len()
+                                            )
+                                        )?;
+                                    }
+                                    let mut new_report = (*report).clone();
+                                    new_report.name = name.to_string().into();
                                     writeln!(
                                         self.writer,
-                                        "-- {} {}",
-                                        report.name.display(),
-                                        "-".repeat(
-                                            self.columns
-                                                - 4
-                                                - report.name.display().to_string().len()
-                                        )
+                                        " |-{:1$}",
+                                        new_report,
+                                        self.path_length - 3
                                     )?;
+                                    self.print_report_total(&report, language.inaccurate)?;
+                                } else {
+                                    writeln!(self.writer, "{:1$}", report, self.path_length)?;
                                 }
-                                let mut new_report = (*report).clone();
-                                new_report.name = name.to_string().into();
-                                writeln!(
-                                    self.writer,
-                                    " |-{:1$}",
-                                    new_report,
-                                    self.path_length - 3
-                                )?;
-                                self.print_report_total(&report, language.inaccurate)?;
-                            } else {
-                                writeln!(self.writer, "{:1$}", report, self.path_length)?;
                             }
+                        }
+                    } else {
+                        // compact format
+                        for report in &language.reports {
+                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
                     }
                 }
@@ -345,7 +394,7 @@ impl<W: Write> Printer<W> {
     }
 
     fn print_subrow(&mut self) -> io::Result<()> {
-        writeln!(self.writer, "{}", self.subrow)
+        writeln!(self.writer, "{}", self.subrow.dimmed())
     }
 
     fn print_report(
@@ -372,7 +421,7 @@ impl<W: Write> Printer<W> {
             return Ok(());
         }
 
-        let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
+        let mut subtotal = tokei::Report::new("|- (Total)".into());
         subtotal.stats.code += report.stats.code;
         subtotal.stats.comments += report.stats.comments;
         subtotal.stats.blanks += report.stats.blanks;
@@ -391,15 +440,13 @@ impl<W: Write> Printer<W> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
-        if name_length <= self.path_length {
-            self.print_report_total_formatted(name, self.path_length, report)?;
-        } else {
+        if name_length > self.path_length {
             let mut formatted = String::from("|");
             // Add 1 to the index to account for the '|' we add to the output string
             let from = find_char_boundary(&name, name_length + 1 - self.path_length);
             formatted.push_str(&name[from..]);
-            self.print_report_total_formatted(name, self.path_length, report)?;
         }
+        self.print_report_total_formatted(name, self.path_length, report)?;
 
         Ok(())
     }
@@ -431,7 +478,7 @@ impl<W: Write> Printer<W> {
     pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
         let total = languages.total();
         self.print_row()?;
-        self.print_language(&total, "Total")?;
+        self.print_language_in_print_total(&total)?;
         self.print_row()
     }
 }

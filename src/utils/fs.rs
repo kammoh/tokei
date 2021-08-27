@@ -95,7 +95,13 @@ pub fn get_all_files<A: AsRef<Path>>(
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
-            Ok(stats) => entry.add_report(stats),
+            Ok(stats) => {
+                let func = config.for_each_fn;
+                if let Some(f) = func {
+                     f(language, stats.clone())
+                };
+                entry.add_report(stats)
+            }
             Err((error, path)) => {
                 entry.mark_inaccurate();
                 error!("Error reading {}:\n{}", path.display(), error);
@@ -103,7 +109,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         }
     };
 
-    if let Some(types) = config.types.as_ref().map(|v| &**v) {
+    if let Some(types) = config.types.as_deref() {
         rx_iter.filter(|(_, l)| types.contains(l)).for_each(process)
     } else {
         rx_iter.for_each(process)

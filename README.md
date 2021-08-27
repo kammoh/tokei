@@ -46,7 +46,6 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
-- [Plugins](#plugins)
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
@@ -66,7 +65,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **TOML**, **YAML**)
+- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
@@ -76,12 +75,17 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei is also a **library** allowing you to easily integrate it with other
   projects.
 
+- Tokei comes with and without color. Set the env variable NO_COLOR to 1, and
+  it'll be black and white.
+
 ## Installation
 
 ### Package Managers
 
 #### Linux
 ```console
+# Alpine Linux (since 3.13)
+apk add tokei
 # Arch Linux
 pacman -S tokei
 # Cargo
@@ -92,6 +96,8 @@ conda install -c conda-forge tokei
 sudo dnf install tokei
 # FreeBSD
 pkg install tokei
+# NetBSD
+pkgin install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
@@ -121,7 +127,7 @@ You can download prebuilt binaries in the
 #### Building
 You can also build and install from source (requires the latest stable [Rust] compiler.)
 ```console
-cargo install --git https://github.com/XAMPPRocky/tokei.git
+cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 ```
 
 [rust]: https://www.rust-lang.org
@@ -166,6 +172,9 @@ the same semantics as `.gitignore`.
 ```shell
 $ tokei ./foo --exclude *.rs
 ```
+
+Paths to exclude can also be listed in a `.tokeignore` file, using the same
+[syntax](https://git-scm.com/docs/gitignore) as .gitignore files.
 
 #### Sorting output
 By default tokei sorts alphabetically by language name, however using `--sort`
@@ -287,11 +296,6 @@ Example show total lines:
 
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
-## Plugins
-Thanks to contributors tokei is now available as a plugin for some text editors.
-
-- [Vim](https://github.com/vmchale/tokei-vim) by [vmchale](https://github.com/vmchale/)
-
 ## Supported Languages
 
 If there is a language that you would to add to tokei feel free to make a pull
@@ -313,6 +317,7 @@ AssemblyGAS
 Autoconf
 AutoHotKey
 Automake
+AWK
 Bash
 Batch
 BrightScript
@@ -354,6 +359,7 @@ Elvish
 EmacsDevEnv
 Emojicode
 Erlang
+Factor
 FEN
 Fish
 FlatBuffers
@@ -409,6 +415,7 @@ Makefile
 Markdown
 Meson
 Mint
+Mlatu
 ModuleDef
 MoonScript
 MsBuild

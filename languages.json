@@ -40,6 +40,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "AsciiDoc": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["////", "////"]],
+      "extensions": ["adoc", "asciidoc"]
+    },
     "Asn1": {
       "name": "ASN.1",
       "line_comment": ["--"],
@@ -89,6 +94,11 @@
     "Automake": {
       "line_comment": ["#"],
       "extensions": ["am"]
+    },
+    "AWK": {
+      "line_comment": ["#"],
+      "shebangs": ["#!/bin/awk -f"],
+      "extensions": ["awk"]
     },
     "Sh": {
       "name": "Shell",
@@ -378,6 +388,11 @@
       "line_comment": ["%"],
       "extensions": ["erl", "hrl"]
     },
+    "Factor": {
+        "line_comment": ["!", "#!"],
+        "multi_line_comments": [["/*", "*/"]],
+        "extensions": ["factor"]
+    },
     "FEN": {
       "name": "FEN",
       "blank": true,
@@ -393,6 +408,7 @@
     "Fstar": {
       "name": "F*",
       "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["fst"]
     },
@@ -467,6 +483,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gleam"]
     },
+    "Gml": {
+      "name": "Gml",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["gml"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],
@@ -522,7 +545,7 @@
       "line_comment": ["#", "//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["tf", "tfvars"]
+      "extensions": ["hcl", "tf", "tfvars"]
     },
     "Headache": {
       "line_comment": ["//"],
@@ -690,6 +713,21 @@
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["kt", "kts"]
     },
+    "Ksh": {
+      "name": "Korn shell",
+      "shebangs": ["#!/bin/ksh"],
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "env": ["ksh"],
+      "extensions": ["ksh"]
+    },
+    "KvLanguage": {
+      "name":"KV Language",
+      "line_comment": ["# "],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["kv"]
+    },
     "Lean": {
       "line_comment": ["--"],
       "multi_line_comments": [["/-", "-/"]],
@@ -717,10 +755,11 @@
       "extensions": ["lds"]
     },
     "Lisp": {
+      "name": "Common Lisp",
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["lisp", "lsp"]
+      "extensions": ["lisp", "lsp", "asd"]
     },
     "LiveScript": {
       "line_comment": ["#"],
@@ -738,6 +777,13 @@
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["lgt", "logtalk"]
+    },
+    "LolCode": {
+      "name": "LOLCODE",
+      "line_comment": ["BTW"],
+      "quotes": [["\\\"", "\\\""]],
+      "multi_line_comments": [["OBTW", "TLDR"]],
+      "extensions": ["lol"]
     },
     "Lua": {
       "line_comment": ["--"],
@@ -766,6 +812,13 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Metal": {
+      "name": "Metal Shading Language",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["metal"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
@@ -784,6 +837,11 @@
     "Mint": {
       "blank": true,
       "extensions": ["mint"]
+    },
+    "Mlatu": {
+        "line_comment": ["//"],
+        "quotes": [["\\\"", "\\\""]],
+        "extensions": ["mlt"]
     },
     "Mustache": {
       "multi_line_comments": [["{{!", "}}"]],
@@ -818,13 +876,19 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "re", "rei"]
+      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
+    "OpenPolicyAgent": {
+      "name": "Open Policy Agent",
+      "line_comment": ["#"],
+      "quotes": [["\\\"","\\\""], ["`", "`"]],
+      "extensions": ["rego"]
     },
     "OpenType": {
       "name": "OpenType Feature File",
@@ -939,6 +1003,15 @@
       "name": "Protocol Buffers",
       "line_comment": ["//"],
       "extensions": ["proto"]
+    },
+    "Pug" : {
+      "line_comment": ["//", "//-"],
+      "quotes": [
+        ["#{\\\"", "\\\"}"],
+        ["#{'", "'}"],
+        ["#{`", "`}"]
+      ],
+      "extensions": ["pug"]
     },
     "PureScript": {
       "nested": true,
@@ -1344,6 +1417,11 @@
       "line_comment": [";;"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["wat", "wast"]
+    },
+    "WGSL": {
+      "name": "WebGPU Shader Language",
+      "line_comment": ["//"],
+      "extensions": ["wgsl"]
     },
     "Wolfram": {
       "quotes": [["\\\"", "\\\""]],

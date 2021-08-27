@@ -1,5 +1,5 @@
-use std::{collections::BTreeMap, error::Error, str::FromStr};
 use serde_json::{json, Map};
+use std::{collections::BTreeMap, error::Error, str::FromStr};
 
 use tokei::{Language, LanguageType, Languages};
 
@@ -89,6 +89,7 @@ macro_rules! supported_formats {
                 for (language_type, language) in languages.into_iter() {
                     map.insert(language_type.to_string(), json!(language));
                 }
+
                 map.insert(String::from("Total"), json!(languages.total()));
 
                 match *self {

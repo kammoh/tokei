@@ -72,7 +72,7 @@ impl LanguageType {
                 // Get the position of the last line before the important
                 // syntax.
                 text[..=m.start()]
-                    .into_iter()
+                    .iter()
                     .rev()
                     .position(|&c| c == b'\n')
                     .filter(|&p| p != 0)
@@ -142,7 +142,7 @@ impl LanguageType {
             };
             trace!("{}", String::from_utf8_lossy(line));
 
-            if syntax.can_perform_single_line_analysis(line, &mut stats) {
+            if syntax.try_perform_single_line_analysis(line, &mut stats) {
                 continue;
             }
 

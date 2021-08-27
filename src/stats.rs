@@ -32,7 +32,7 @@ impl CodeStats {
     pub fn summarise(&self) -> Self {
         let mut summary = self.clone();
 
-        for (_, stats) in std::mem::replace(&mut summary.blobs, BTreeMap::new()) {
+        for (_, stats) in std::mem::take(&mut summary.blobs) {
             let child_summary = stats.summarise();
 
             summary.blanks += child_summary.blanks;
@@ -41,15 +41,6 @@ impl CodeStats {
         }
 
         summary
-    }
-}
-
-impl ops::Add for CodeStats {
-    type Output = Self;
-
-    fn add(mut self, rhs: Self) -> Self::Output {
-        self += rhs;
-        self
     }
 }
 
